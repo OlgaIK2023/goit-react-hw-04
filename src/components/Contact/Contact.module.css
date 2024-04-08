@@ -1,0 +1,26 @@
+.wrapper_contact {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    border: 1px solid black;
+    padding: 5px;
+    justify-content: space-between;
+    border-radius: 8px;
+  }
+  
+  .delete_button {
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    /* margin: auto 0; */
+    align-content: center;
+    align-self: center;
+    
+  }
+  
+  .delete_button:hover {
+    background-color: rgb(99, 99, 141);
+    transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid black;
+  }

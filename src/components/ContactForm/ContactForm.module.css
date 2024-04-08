@@ -1,0 +1,37 @@
+.forms {
+    margin: 0 auto 25px;
+    border: 1px solid black;
+    width: 350px;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  .add {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .btn {
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+    min-width: 100px;
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+  
+  .btn:hover {
+    background-color: rgb(99, 99, 141);
+    transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid black;
+  }
+  
+  .inp {
+    border-radius: 3px;
+  }
+  
+  .err {
+    color: brown;
+  }
