@@ -1,68 +1,78 @@
-import { useEffect, useState } from "react";
 
-// import Contact from "./components/Contact/Contact";
-import ContactForm from "./components/ContactForm/ContactForm";
-import ContactList from "./components/ContactList/ContactList";
-import SearchBox from "./components/SearchBox/SearchBox";
-import { nanoid } from "nanoid";
-
-const initialContacts = [
-  { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-  { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-  { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-  { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
-];
-
-
-//APP code below
+import { useEffect, useState } from 'react'
+import './App.css'
+import SearchBar from './SearchBar/SearchBar'
+import { fetchPhotosByInput } from './components/photos-api'
+import ImageGallery from './ImageGallery/ImageGallery'
+import Loader from './Loader/Loader'
+import ErrorMessage from './ErrorMessage/ErrorMessage'
+import LoadMoreBtn from './LoadMoreBtn/LoadMoreBtn'
+import ImageModal from './ImageModal/ImageModal'
 
 function App() {
-  const [contacts, setContacts] = useState(() => {
-    const savedContacts = window.localStorage.getItem("saved-Contacts");
-    if (savedContacts !== null) {
-      return JSON.parse(savedContacts);
+
+  const [inputSearch, setInputSearch] = useState("")
+  const [photos, setPhotos] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+  const [page, setPage] = useState(false)
+  const [showBtn, setShowBtn] = useState(false);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [description, setDescription] = useState(null);
+
+
+  useEffect(() => { 
+    if (!inputSearch) return;
+
+    async function fetchPhotos() { 
+      try{ 
+        setLoading(true);
+        const {total_pages, results} = await fetchPhotosByInput(inputSearch, page);
+        setPhotos((prevPhotos) => [...prevPhotos, ...results]);
+        setShowBtn(total_pages > page);
+}
+      catch(error) {setError(true)}
+
+      finally { setLoading(false);}
+      
     }
-    return initialContacts;
-  });
+    fetchPhotos()
+  },[inputSearch, page])
 
-  useEffect(() => {
-    window.localStorage.setItem("saved-Contacts", JSON.stringify(contacts)),
-      [contacts];
-  });
 
-  const [filter, setFilter] = useState("");
-
-  const onChangeFilter = (event) => {
-    setFilter(event.target.value);
-  };
-
-  const addContact = (newContact) => {
-    const finalContact = { ...newContact, id: nanoid() };
-    setContacts((prevContacts) => [...prevContacts, finalContact]);
-  };
-
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
-
-  const onDeleteContact = (contactId) => {
-    setContacts((prevContacts) =>
-      prevContacts.filter((contact) => contact.id !== contactId)
-    );
-  };
-
-  return (
-    <div>
-      <h1>Phonebook</h1>
-      <ContactForm addContact={addContact} />
-      <SearchBox filter={filter} onChangeFilter={onChangeFilter} />
-
-      <ContactList
-        contacts={filteredContacts}
-        onDeleteContact={onDeleteContact}
-      />
-    </div>
-  );
+  const onSubmit = (inputSearch) =>{
+  setInputSearch(inputSearch);
+  setPhotos([]);
+  setPage(1);
+  setShowBtn(false)
 }
 
-export default App;
+const onClickButton = () => {
+  setPage((prevPage) => prevPage + 1);
+ 
+};
+
+const openModal = (urlModal,description) => {
+  setImageSrc(urlModal);
+  setDescription(description);
+};
+
+const closeModal = () => {
+  setImageSrc(null)
+};
+
+  
+
+  return (<>
+    <SearchBar onSubmit={onSubmit} />
+    {loading && <Loader/>}
+    {error && <ErrorMessage/>}
+    {photos.length !== 0 && <ImageGallery photos={photos} openModal={openModal}/>}
+    {showBtn && <LoadMoreBtn onClickButton={onClickButton} />}
+    <ImageModal isOpen={imageSrc !== null} onClose={closeModal} urlModal={imageSrc} description={description}/>
+  
+  
+  </>)
+}
+
+export default App
