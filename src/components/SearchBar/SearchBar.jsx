@@ -1,5 +1,5 @@
 
-import css from "./SearchBox.module.css";
+import css from "./SearchBar.module.css";
 
 const SearchBox = ({ filter, onChangeFilter }) => {
   return (
