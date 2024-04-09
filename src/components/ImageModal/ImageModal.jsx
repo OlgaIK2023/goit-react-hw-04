@@ -1,6 +1,7 @@
 
+import  "./ImageModal.module.css"
 import Modal from 'react-modal'
-
+import css from './ImageModal.module.css'
 
 const customStyles = {
     content: {
@@ -12,13 +13,11 @@ const customStyles = {
         transform: 'translate(-50%, -50%)',
         border:'none',
         backgroundColor:'transparent'
-    },}
+    },
+};
 
-
-    Modal.setAppElement('#root');
+Modal.setAppElement('#root');
 Modal.defaultStyles.overlay.backgroundColor = 'rgba(0, 0, 0, 0.871)';
-
-
 const ImageModal = ({onClose, urlModal,isOpen,description}) => {
   return (
     <Modal
@@ -26,7 +25,7 @@ const ImageModal = ({onClose, urlModal,isOpen,description}) => {
         onRequestClose={onClose}
         style={customStyles}  
     >
-        <img  src={urlModal} alt={description} />
+        <img className={css.modal_image} src={urlModal} alt={description} />
     </Modal>
   )
 }

@@ -1,16 +1,21 @@
 import css from "./Loader.module.css"
-import { InfinitySpin } from 'react-loader-spinner'
+import { MagnifyingGlass  } from 'react-loader-spinner'
 
 const Loader = () => {
-
     return (
-    <div className={css.loader}>
-        <InfinitySpin
+  <div className={css.loader}>
+      <MagnifyingGlass
         visible={true}
-        width="200"
-        color="#4fa94d"
-        ariaLabel="infinity-spin-loading"/>
-    </div>)
-}
-
-export default Loader
+        height="80"
+        width="80"
+        ariaLabel="magnifying-glass-loading"
+        wrapperStyle={{}}
+        wrapperClass="magnifying-glass-wrapper"
+        glassColor="#c0efff"
+        color="blue"
+        />
+  </div>
+    )
+  }
+  
+  export default Loader
