@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 import SearchBar from './components/SearchBar/SearchBar'
 import { fetchPhotosByInput } from './photos-api'
@@ -8,6 +8,8 @@ import Loader from './components/Loader/Loader'
 import ErrorMessage from './components/ErrorMessage/ErrorMessage'
 import LoadMoreBtn from './components/LoadMoreBtn/LoadMoreBtn'
 import ImageModal from './components/ImageModal/ImageModal'
+import ScrollIntoView from 'react-scroll-into-view'
+import ScrollUp from "./ScrollUp/ScrollUp.jsx";
 
 function App() {
 
@@ -19,60 +21,74 @@ function App() {
   const [showBtn, setShowBtn] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
   const [description, setDescription] = useState(null);
+  const lastImageRef = useRef(null);
+  const [scrollBtn, setScrollBtn] = useState(false);
 
 
-  useEffect(() => { 
+  useEffect(() => {
     if (!inputSearch) return;
-
-    async function fetchPhotos() { 
-      try{ 
-        setLoading(true);
-        const {total_pages, results} = await fetchPhotosByInput(inputSearch, page);
-        setPhotos((prevPhotos) => [...prevPhotos, ...results]);
-        setShowBtn(total_pages > page);
-}
-      catch(error) {setError(true)}
-
-      finally { setLoading(false);}
+    async function fetchPhotos()  {
+    try {
+      setLoading(true);
+      setError(false);
+      const {total_pages,results}=await fetchPhotosByInput(inputSearch, page);
+      setPhotos((prevPhotos) => [...prevPhotos, ...results]);
       
+      setShowBtn(total_pages > page);
+    } catch (error) {
+      setError(true)
+    } finally {
+      setLoading(false);
+      }
     }
-    fetchPhotos()
-  },[inputSearch, page])
-
-
-  const onSubmit = (inputSearch) =>{
+  fetchPhotos();
+  scrollToLastImage();
+    
+}, [inputSearch, page])
+  
+const onSubmit = (inputSearch) => {
   setInputSearch(inputSearch);
   setPhotos([]);
   setPage(1);
-  setShowBtn(false)
+  setShowBtn(false);
 }
 
-const onClickButton = () => {
-  setPage((prevPage) => prevPage + 1);
- 
+const scrollToLastImage = () => {
+  if (lastImageRef.current) {
+  lastImageRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+   }
 };
+  const onClickButton = () => {
+    setPage((prevPage) => prevPage + 1);
+    setScrollBtn(true);
+  };
 
-const openModal = (urlModal,description) => {
-  setImageSrc(urlModal);
-  setDescription(description);
-};
+  const openModal = (urlModal,description) => {
+    setImageSrc(urlModal);
+    setDescription(description);
+  };
 
-const closeModal = () => {
-  setImageSrc(null)
-};
+  const closeModal = () => {
+    setImageSrc(null)
+  };
 
-  
 
-  return (<>
-    <SearchBar onSubmit={onSubmit} />
-    {loading && <Loader/>}
-    {error && <ErrorMessage/>}
-    {photos.length !== 0 && <ImageGallery photos={photos} openModal={openModal}/>}
-    {showBtn && <LoadMoreBtn onClickButton={onClickButton} />}
-    <ImageModal isOpen={imageSrc !== null} onClose={closeModal} urlModal={imageSrc} description={description}/>
-  
-  
-  </>)
+  const onScrollBtn = () => {
+    setScrollBtn(false)
+  };
+
+  return (
+    <>
+      <SearchBar onSubmit={onSubmit} />
+      {loading && <Loader />}
+      {error && <ErrorMessage />}
+      {photos.length !== 0 && <ImageGallery photos={photos} openModal={openModal} lastImageRef={lastImageRef}  onClickButton={onClickButton} />}
+      {showBtn && <LoadMoreBtn onClickButton={onClickButton} />}
+      <ImageModal isOpen={imageSrc !== null} onClose={closeModal} urlModal={imageSrc} description={description} />
+      {scrollBtn && <ScrollIntoView selector="#header"><ScrollUp onScrollBtn={onScrollBtn} /></ScrollIntoView>}
+    
+    </>
+  );
 }
 
 export default App

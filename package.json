@@ -22,6 +22,7 @@
     "react-icons": "^5.0.1",
     "react-loader-spinner": "^6.1.6",
     "react-modal": "^3.16.1",
+    "react-scroll-into-view": "^2.1.2",
     "yup": "^1.4.0"
   },
   "devDependencies": {
